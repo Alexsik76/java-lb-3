@@ -23,5 +23,8 @@ public class MVCMain {
         System.out.println(perm_t);
         System.out.println(sky_pass);
         sky_pass.useSkyPass();
+        Permissions perm_c =  new CountPermission(false, 5);
+        SkiPass sky_pass_2 = new SkiPass("2", perm_c);
+        sky_pass_2.useSkyPass();
     }
 }

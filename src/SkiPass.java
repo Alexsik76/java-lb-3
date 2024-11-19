@@ -7,19 +7,17 @@ public class SkiPass {
        SkiPass.permission = permission;
     }
    public boolean checkSkyPass(){
-       return permission.checkPermission();
-   };
+       return !blocked & permission.checkPermission();
+   }
 
    public void useSkyPass() {
-      if (permission.checkPermission()) {
-         System.out.println("SkiPass used");
+      if (checkSkyPass()) {
+          permission.usePermission();
+          System.out.println("SkiPass used");
       }
       else {
-         System.out.println("SkyPass " +  id + " not permitted");
+          System.out.println("SkyPass " +  id + " not permitted");
       }
-      permission.usePermission();
-   };
-
-
+   }
 }
 
