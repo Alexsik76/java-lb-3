@@ -11,10 +11,14 @@ abstract class Permissions {
 }
 
 interface CheckWeekday {
-    default boolean is_today_weekend() {
-        LocalDate today = LocalDate.now();
+
+    public default boolean is_weekend(LocalDateTime time) {
+        LocalDateTime today = LocalDateTime.now();
         return DayOfWeek.of(today.get(ChronoField.DAY_OF_WEEK)) == DayOfWeek.SUNDAY ||
                 DayOfWeek.of(today.get(ChronoField.DAY_OF_WEEK)) == DayOfWeek.SATURDAY;
+    }
+    default boolean is_today_weekend(){
+        return is_weekend(LocalDateTime.now());
     }
 }
 
@@ -50,10 +54,23 @@ class SeasonPermission extends TimePermission {
 class ShortPeriodPermission extends TimePermission implements CheckWeekday {
     boolean is_weekend;
     Period period;
-    ShortPeriodPermission( LocalDateTime start_time, Period duration, boolean is_weekend) {
+    ShortPeriodPermission(LocalDateTime start_time, Period duration, boolean is_weekend) throws NotCorrectPeriod {
         super(start_time);
         this.period = duration;
         this.is_weekend = is_weekend;
+        if (!is_correct_period()){
+
+            throw new NotCorrectPeriod("The period includes weekends and weekdays at the same time");
+        }
+    }
+
+    private boolean is_correct_period() {
+        System.out.println((DayOfWeek.of(start_time.get(ChronoField.DAY_OF_WEEK)) != DayOfWeek.MONDAY)
+                && (is_weekend(start_time) == is_weekend(getEndTime())));
+        return ((DayOfWeek.of(start_time.get(ChronoField.DAY_OF_WEEK)) == DayOfWeek.MONDAY)
+                && (period == Period.FIVE_DAYS))
+                || ((DayOfWeek.of(start_time.get(ChronoField.DAY_OF_WEEK)) != DayOfWeek.MONDAY)
+                && (is_weekend(start_time) == is_weekend(getEndTime())));
     }
     //TODO Add check period
 

@@ -6,7 +6,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class MVCMain {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws NotCorrectPeriod {
         //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
         // to see how IntelliJ IDEA suggests fixing it.
         System.out.print("Hello and welcome!\n");
@@ -20,7 +20,7 @@ public class MVCMain {
         }
         LocalDateTime st_t = LocalDateTime.now().minusHours(5);
 //        Period period = new Period("HALF_DAY");
-        Permissions perm_t =  new ShortPeriodPermission(st_t, Period.HALF_DAY,false);
+        Permissions perm_t =  new ShortPeriodPermission(st_t, Period.FIVE_DAYS,false);
         SkiPass sky_pass = new SkiPass("1", perm_t );
         System.out.println(perm_t);
         System.out.println(sky_pass);
