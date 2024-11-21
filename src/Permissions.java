@@ -1,63 +1,90 @@
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Duration;
 import java.time.temporal.ChronoField;
 
-public abstract class Permissions {
-    final boolean is_weekend;
-    Permissions(boolean is_weekend) {
-        this.is_weekend = is_weekend;
+
+abstract class Permissions {
+    abstract boolean checkPermission();
+    void usePermission(){
     }
-    final boolean is_today_weekend() {
+}
+
+interface CheckWeekday {
+    default boolean is_today_weekend() {
         LocalDate today = LocalDate.now();
         return DayOfWeek.of(today.get(ChronoField.DAY_OF_WEEK)) == DayOfWeek.SUNDAY ||
                 DayOfWeek.of(today.get(ChronoField.DAY_OF_WEEK)) == DayOfWeek.SATURDAY;
     }
-    abstract boolean checkPermission();
-    abstract void usePermission();
 }
 
-class TimePermission extends Permissions {
+abstract class TimePermission extends Permissions {
     final LocalDateTime start_time;
-    final Duration duration;
-    TimePermission(boolean is_weekend, LocalDateTime start_time,Duration duration) {
-        super(is_weekend);
+
+    TimePermission(LocalDateTime start_time) {
         this.start_time = start_time;
-        this.duration = duration;
+    }
+    abstract LocalDateTime getEndTime();
+
+    boolean is_allowed_time() {
+        return LocalDateTime.now().isAfter(start_time)
+                && LocalDateTime.now().isBefore(getEndTime());
+    }
+}
+
+class SeasonPermission extends TimePermission {
+    LocalDateTime end_of_season_time;
+    SeasonPermission(LocalDateTime start_time, LocalDateTime end_of_season_time) {
+       super(start_time);
+       this.end_of_season_time = end_of_season_time;
+    }
+    LocalDateTime getEndTime() {
+        return end_of_season_time;
+    };
+    @Override
+    boolean checkPermission() {
+        return is_allowed_time();
+    }
+}
+
+class ShortPeriodPermission extends TimePermission implements CheckWeekday {
+    boolean is_weekend;
+    Period period;
+    ShortPeriodPermission( LocalDateTime start_time, Period duration, boolean is_weekend) {
+        super(start_time);
+        this.period = duration;
+        this.is_weekend = is_weekend;
+    }
+    //TODO Add check period
+
+    LocalDateTime getEndTime() {
+        return (LocalDateTime) period.getDuration().addTo(this.start_time);
     }
 
     @Override
     boolean checkPermission() {
-        return is_today_weekend() == this.is_weekend
-                && LocalDateTime.now().isAfter(this.start_time)
-                && LocalDateTime.now().isBefore((LocalDateTime) this.duration.addTo(this.start_time));
+        return is_today_weekend() == is_weekend && is_allowed_time();
     }
-
-    @Override
-    void usePermission() {
-    }
-
 }
 
-class CountPermission extends Permissions {
+class CountPermission extends Permissions implements CheckWeekday {
+    boolean is_weekend;
     private int rest_of_trips;
     CountPermission(boolean is_weekend, int trips) {
-        super(is_weekend);
+        this.is_weekend = is_weekend;
         this.rest_of_trips = trips;
     }
 
     @Override
     boolean checkPermission() {
-        return is_today_weekend() == this.is_weekend
-                && this.rest_of_trips > 0;
+        return is_today_weekend() == is_weekend
+                && rest_of_trips > 0;
     }
 
     @Override
     void usePermission() {
         if (checkPermission()) {
-            this.rest_of_trips--;
+            rest_of_trips--;
         }
     }
-
 }

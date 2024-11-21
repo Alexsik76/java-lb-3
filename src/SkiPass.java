@@ -1,13 +1,14 @@
 public class SkiPass {
-    static String id;
-    public boolean blocked = false;
-    static Permissions permission;
-    public SkiPass(String id, Permissions permission) {
-       SkiPass.id = id;
-       SkiPass.permission = permission;
+    String id;
+    boolean blocked = false;
+    Permissions permission;
+    SkiPass(String id, Permissions permission) {
+       this.id = id;
+       this.permission = permission;
     }
+
    public boolean checkSkyPass(){
-       return !blocked & permission.checkPermission();
+       return !blocked && permission.checkPermission();
    }
 
    public void useSkyPass() {

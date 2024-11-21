@@ -1,5 +1,7 @@
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.\
+
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -17,8 +19,8 @@ public class MVCMain {
 
         }
         LocalDateTime st_t = LocalDateTime.now().minusHours(5);
-        Duration dur = Duration.ofHours(4);
-        Permissions perm_t =  new TimePermission(false, st_t, dur);
+//        Period period = new Period("HALF_DAY");
+        Permissions perm_t =  new ShortPeriodPermission(st_t, Period.HALF_DAY,false);
         SkiPass sky_pass = new SkiPass("1", perm_t );
         System.out.println(perm_t);
         System.out.println(sky_pass);
@@ -26,5 +28,6 @@ public class MVCMain {
         Permissions perm_c =  new CountPermission(false, 5);
         SkiPass sky_pass_2 = new SkiPass("2", perm_c);
         sky_pass_2.useSkyPass();
+
     }
 }
