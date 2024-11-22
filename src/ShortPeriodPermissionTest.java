@@ -4,19 +4,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ShortPeriodPermissionTest {
     LocalDateTime start_time = LocalDateTime.now().minusHours(1);
-    final ShortPeriodPermission sh_p_p = new ShortPeriodPermission(start_time, Period.HALF_DAY, false);
+    boolean is_weekend = CheckWeekday.check_weekend(LocalDateTime.now());
+    final ShortPeriodPermission sh_p_p = new ShortPeriodPermission(start_time, Period.HALF_DAY, is_weekend);
 
     //    private final LocalDateTime test_time = LocalDateTime.parse("11:00 22.11.2024");
-    ShortPeriodPermissionTest() throws NotCorrectPeriod {
+    ShortPeriodPermissionTest() throws IllegalArgumentException {
     }
 
     @org.junit.jupiter.api.Test
     void is_allowed_time() {
         assertTrue(sh_p_p.is_allowed_time());
-    }
-
-    @org.junit.jupiter.api.Test
-    void usePermission() {
     }
 
     @org.junit.jupiter.api.Test

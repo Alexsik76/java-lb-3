@@ -3,15 +3,20 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 
+
 interface CheckWeekday {
 
     default boolean is_weekend(@org.jetbrains.annotations.NotNull LocalDateTime time) {
-        return DayOfWeek.of(time.get(ChronoField.DAY_OF_WEEK)) == DayOfWeek.SUNDAY ||
-                DayOfWeek.of(time.get(ChronoField.DAY_OF_WEEK)) == DayOfWeek.SATURDAY;
+        return check_weekend(time);
     }
 
     default boolean is_today_weekend() {
         return is_weekend(LocalDateTime.now());
+    }
+    static boolean check_weekend(LocalDateTime time) {
+        DayOfWeek current_day = DayOfWeek.of(time.get(ChronoField.DAY_OF_WEEK));
+        return current_day == DayOfWeek.SUNDAY
+                || current_day == DayOfWeek.SATURDAY;
     }
 }
 
@@ -47,13 +52,13 @@ class ShortPeriodPermission extends TimePermission implements CheckWeekday {
     boolean is_weekend;
     Period period;
 
-    ShortPeriodPermission(LocalDateTime start_time, Period duration, boolean is_weekend) throws NotCorrectPeriod {
+    ShortPeriodPermission(LocalDateTime start_time, Period duration, boolean is_weekend) throws IllegalArgumentException {
         super(start_time);
         setVariables(duration, is_weekend);
         checkPeriod();
     }
 
-    ShortPeriodPermission(String string_time, Period duration, boolean is_weekend) throws NotCorrectPeriod {
+    ShortPeriodPermission(String string_time, Period duration, boolean is_weekend) throws IllegalArgumentException {
         super(string_time);
         setVariables(duration, is_weekend);
         checkPeriod();
@@ -64,12 +69,12 @@ class ShortPeriodPermission extends TimePermission implements CheckWeekday {
         this.is_weekend = is_weekend;
     }
 
-    private void checkPeriod() throws NotCorrectPeriod {
+    private void checkPeriod() throws IllegalArgumentException {
         if (((DayOfWeek.of(start_time.get(ChronoField.DAY_OF_WEEK)) != DayOfWeek.MONDAY)
                 || (period != Period.FIVE_DAYS))
                 && ((period == Period.FIVE_DAYS)
                 || (is_weekend(start_time) != is_weekend(getEndTime())))) {
-            throw new NotCorrectPeriod("The period includes weekends and weekdays at the same time.");
+            throw new IllegalArgumentException("The period includes weekends and weekdays at the same time.");
         }
     }
 
