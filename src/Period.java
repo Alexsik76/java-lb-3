@@ -7,9 +7,11 @@ public enum Period {
     FIVE_DAYS(Duration.ofDays(5));
 
     private final Duration duration;
-    Period (Duration duration){
+
+    Period(Duration duration) {
         this.duration = duration;
     }
+
     public Duration getDuration() {
         return duration;
     }
