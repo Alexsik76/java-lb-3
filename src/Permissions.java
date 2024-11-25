@@ -6,7 +6,7 @@ import java.time.temporal.ChronoField;
 
 interface CheckWeekday {
 
-    default boolean is_weekend(@org.jetbrains.annotations.NotNull LocalDateTime time) {
+    default boolean is_weekend(LocalDateTime time) {
         return check_weekend(time);
     }
 
@@ -28,7 +28,7 @@ abstract class Permissions {
 }
 
 abstract class TimePermission extends Permissions {
-
+//todo rework with StartTime
     final LocalDateTime start_time;
 
     TimePermission(String string_time) {

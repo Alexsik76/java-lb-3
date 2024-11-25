@@ -3,7 +3,7 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ShortPeriodPermissionTest {
-    LocalDateTime start_time = LocalDateTime.now().minusHours(1);
+    LocalDateTime start_time = LocalDateTime.now().minusHours(3);
     boolean is_weekend = CheckWeekday.check_weekend(LocalDateTime.now());
     final ShortPeriodPermission sh_p_p = new ShortPeriodPermission(start_time, Period.HALF_DAY, is_weekend);
 
@@ -23,7 +23,7 @@ public class ShortPeriodPermissionTest {
 
     @org.junit.jupiter.api.Test
     void getEndTime() {
-        LocalDateTime correct_end_time = LocalDateTime.now().plusHours(3);
+        LocalDateTime correct_end_time = LocalDateTime.now().plusHours(1);
         assertEquals(correct_end_time.getSecond(), sh_p_p.getEndTime().getSecond());
     }
 
