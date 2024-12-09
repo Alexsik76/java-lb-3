@@ -6,6 +6,12 @@ import java.time.temporal.ChronoField;
 
 interface CheckWeekday {
 
+    static boolean check_weekend(LocalDateTime time) {
+        DayOfWeek current_day = DayOfWeek.of(time.get(ChronoField.DAY_OF_WEEK));
+        return current_day == DayOfWeek.SUNDAY
+                || current_day == DayOfWeek.SATURDAY;
+    }
+
     default boolean is_weekend(LocalDateTime time) {
         return check_weekend(time);
     }
@@ -13,23 +19,21 @@ interface CheckWeekday {
     default boolean is_today_weekend() {
         return is_weekend(LocalDateTime.now());
     }
-    static boolean check_weekend(LocalDateTime time) {
-        DayOfWeek current_day = DayOfWeek.of(time.get(ChronoField.DAY_OF_WEEK));
-        return current_day == DayOfWeek.SUNDAY
-                || current_day == DayOfWeek.SATURDAY;
-    }
 }
 
 abstract class Permissions {
-    abstract boolean checkPermission();
+    abstract void checkPermission() throws NotPermitted;
 
-    void usePermission() {
+    void usePermission() throws NotPermitted {
+        checkPermission();
     }
 }
 
 abstract class TimePermission extends Permissions {
-//todo rework with StartTime
+    //todo rework with StartTime
     final LocalDateTime start_time;
+    boolean is_weekend;
+    Period period;
 
     TimePermission(String string_time) {
         final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
@@ -49,23 +53,21 @@ abstract class TimePermission extends Permissions {
 }
 
 class ShortPeriodPermission extends TimePermission implements CheckWeekday {
-    boolean is_weekend;
-    Period period;
 
-    ShortPeriodPermission(LocalDateTime start_time, Period duration, boolean is_weekend) throws IllegalArgumentException {
+    ShortPeriodPermission(LocalDateTime start_time, Period period, boolean is_weekend) throws IllegalArgumentException {
         super(start_time);
-        setVariables(duration, is_weekend);
+        setVariables(period, is_weekend);
         checkPeriod();
     }
 
-    ShortPeriodPermission(String string_time, Period duration, boolean is_weekend) throws IllegalArgumentException {
+    ShortPeriodPermission(String string_time, Period period, boolean is_weekend) throws IllegalArgumentException {
         super(string_time);
-        setVariables(duration, is_weekend);
+        setVariables(period, is_weekend);
         checkPeriod();
     }
 
-    private void setVariables(Period duration, boolean is_weekend) {
-        this.period = duration;
+    private void setVariables(Period period, boolean is_weekend) {
+        this.period = period;
         this.is_weekend = is_weekend;
     }
 
@@ -78,13 +80,15 @@ class ShortPeriodPermission extends TimePermission implements CheckWeekday {
         }
     }
 
-    LocalDateTime getEndTime() {
-        return (LocalDateTime) period.getDuration().addTo(this.start_time);
+    @Override
+    void checkPermission() throws NotPermitted {
+        if (is_today_weekend() != is_weekend || !is_allowed_time()) {
+            throw new NotPermitted("not allowed time permission");
+        }
     }
 
-    @Override
-    boolean checkPermission() {
-        return is_today_weekend() == is_weekend && is_allowed_time();
+    LocalDateTime getEndTime() {
+        return (LocalDateTime) period.getDuration().addTo(this.start_time);
     }
 }
 
@@ -98,16 +102,19 @@ class CountPermission extends Permissions implements CheckWeekday {
     }
 
     @Override
-    boolean checkPermission() {
-        return is_today_weekend() == is_weekend
-                && rest_of_trips > 0;
+    void checkPermission() throws NotPermitted {
+        if (is_today_weekend() != is_weekend) {
+            throw new NotPermitted("not allowed time permission");
+        }
+        if (rest_of_trips < 1) {
+            throw new NotPermitted("all trips are sold out");
+        }
     }
 
     @Override
-    void usePermission() {
-        if (checkPermission()) {
-            rest_of_trips--;
-        }
+    void usePermission() throws NotPermitted {
+        checkPermission();
+        rest_of_trips--;
     }
 }
 
@@ -124,9 +131,9 @@ class SeasonPermission extends TimePermission {
     }
 
     @Override
-    boolean checkPermission() {
-        return is_allowed_time();
+    void checkPermission() throws NotPermitted {
+        if (!is_allowed_time()) {
+            throw new NotPermitted("not allowed time permission");
+        }
     }
 }
-
-
