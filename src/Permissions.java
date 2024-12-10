@@ -44,8 +44,8 @@ abstract class TimePermission extends Permissions {
     abstract LocalDateTime getEndTime();
 
     boolean is_allowed_time() {
-        return !LocalDateTime.now().isAfter(start_date_time)
-                || !LocalDateTime.now().isBefore(getEndTime());
+        return LocalDateTime.now().isAfter(start_date_time)
+                && LocalDateTime.now().isBefore(getEndTime());
     }
 }
 
@@ -80,7 +80,7 @@ class ShortPeriodPermission extends TimePermission implements CheckWeekday {
 
     @Override
     void checkPermission() throws NotPermitted {
-        if (is_today_weekend() != is_weekend || is_allowed_time()) {
+        if (is_today_weekend() != is_weekend || !is_allowed_time()) {
             throw new NotPermitted("not allowed time permission");
         }
     }
