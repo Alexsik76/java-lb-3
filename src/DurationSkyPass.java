@@ -1,6 +1,6 @@
 import java.time.Duration;
 
-public enum Period {
+public enum DurationSkyPass {
     HALF_DAY(Duration.ofHours(4)),
     DAY(Duration.ofDays(1)),
     TWO_DAYS(Duration.ofDays(2)),
@@ -8,7 +8,7 @@ public enum Period {
 
     private final Duration duration;
 
-    Period(Duration duration) {
+    DurationSkyPass(Duration duration) {
         this.duration = duration;
     }
 

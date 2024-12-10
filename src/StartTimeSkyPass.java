@@ -1,17 +1,17 @@
 import java.time.Duration;
 import java.time.LocalTime;
 
-public enum StartTimes {
+public enum StartTimeSkyPass {
     AM(LocalTime.parse("09:00")),
     PM(LocalTime.parse("13:00"));
 
     private final LocalTime startTime;
 
-    StartTimes(LocalTime st) {
+    StartTimeSkyPass(LocalTime st) {
         startTime = st;
     }
 
-    public LocalTime getStartTime() {
+    public LocalTime getTime() {
         return startTime;
     }
 
