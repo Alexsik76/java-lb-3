@@ -28,9 +28,9 @@ public class SkiPass {
     public void useSkyPass(boolean verbose) {
         try {
             checkSkyPass(verbose);
+            permission.usePermission();
             System.out.println("SkiPass " + getInfo(verbose) + "\n" +
                     Colors.GREEN + "successfully used" + Colors.RESET);
-            permission.usePermission();
         } catch (NotPermitted e) {
             System.err.println(e.getMessage());
         }

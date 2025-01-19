@@ -4,9 +4,8 @@ public class MVCMain {
     public static boolean verbose = false;
 
     public static void main(String[] args) throws IllegalArgumentException {
-        System.out.print("Hello and welcome!\n");
         processArgs(args);
-        Generation gen = new Generation(51, verbose);
+        Generation gen = new Generation(40, verbose);
         ArrayList<SkiPass> tickets = gen.getTickets();
         SkiNet sky_net = new SkiNet(tickets);
         Turnstile turnstile = new Turnstile(sky_net);

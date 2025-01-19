@@ -12,14 +12,11 @@ public class Generation {
         if (number < 1) {
             throw new IllegalArgumentException("Число квитків має бути більше 0");
         }
-        if (number > 50) {
-            System.out.println(Colors.RED + "Буде створено забагато квитків" + Colors.RESET);
-        }
         System.out.println(Colors.GREEN + "Буде створено " + number + " квитків" + Colors.RESET);
         int j = 0;
-        while (j <= number) {
+        while (j < number) {
             for (int i = 0; i < Math.random() * 10; i++) {
-                if (j > number) {
+                if (j >= number) {
                     break;
                 }
                 try {
@@ -33,7 +30,7 @@ public class Generation {
                 }
             }
             for (int i = 0; i < Math.random() * 10; i++) {
-                if (j > number) {
+                if (j >= number) {
                     break;
                 }
                 Permissions perm = getRandomCountPermission();
@@ -43,7 +40,7 @@ public class Generation {
                 j++;
             }
             for (int i = 0; i < Math.random() * 10; i++) {
-                if (j > number) {
+                if (j >= number) {
                     break;
                 }
                 Permissions perm = getRandomSeasonsPermission();

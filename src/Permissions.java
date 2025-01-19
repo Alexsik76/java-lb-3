@@ -1,4 +1,5 @@
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -41,14 +42,16 @@ abstract class TimePermission extends Permissions {
     }
 
     abstract LocalDateTime getEndTime();
-
+    abstract String getDuration();
     boolean is_allowed_time() {
         return LocalDateTime.now().isAfter(start_date_time)
                 && LocalDateTime.now().isBefore(getEndTime());
     }
 
     public String get_additional_info() {
-        return "Start time: " + start_date_time.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        return "Start time: " + start_date_time.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) +"\n" +
+                "End time: " + getEndTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) +"\n" +
+                "Period:" + getDuration();
     }
 
 }
@@ -80,6 +83,9 @@ class ShortPeriodPermission extends TimePermission implements CheckWeekday {
 
     LocalDateTime getEndTime() {
         return (LocalDateTime) period.getDuration().addTo(this.start_date_time);
+    }
+    String getDuration() {
+        return period.getDuration().toString();
     }
 
     @Override
@@ -126,7 +132,9 @@ class SeasonPermission extends TimePermission {
     LocalDateTime getEndTime() {
         return end_of_season_time;
     }
-
+    String getDuration() {
+        return "Season";
+    }
     @Override
     boolean checkPermission() {
         return is_allowed_time();
