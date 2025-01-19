@@ -1,10 +1,17 @@
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 
 
 interface CheckWeekday {
+
+    static boolean check_weekend(LocalDateTime time) {
+        DayOfWeek current_day = DayOfWeek.of(time.get(ChronoField.DAY_OF_WEEK));
+        return current_day == DayOfWeek.SUNDAY
+                || current_day == DayOfWeek.SATURDAY;
+    }
 
     default boolean is_weekend(LocalDateTime time) {
         return check_weekend(time);
@@ -13,73 +20,66 @@ interface CheckWeekday {
     default boolean is_today_weekend() {
         return is_weekend(LocalDateTime.now());
     }
-    static boolean check_weekend(LocalDateTime time) {
-        DayOfWeek current_day = DayOfWeek.of(time.get(ChronoField.DAY_OF_WEEK));
-        return current_day == DayOfWeek.SUNDAY
-                || current_day == DayOfWeek.SATURDAY;
-    }
 }
 
 abstract class Permissions {
     abstract boolean checkPermission();
 
-    void usePermission() {
+    public void usePermission() {
     }
+
+    abstract String get_additional_info();
+
 }
 
 abstract class TimePermission extends Permissions {
-//todo rework with StartTime
-    final LocalDateTime start_time;
+    final LocalDateTime start_date_time;
 
-    TimePermission(String string_time) {
-        final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
-        this.start_time = LocalDateTime.parse(string_time, dateTimeFormatter);
-    }
 
-    TimePermission(LocalDateTime start_time) {
-        this.start_time = start_time;
+    TimePermission(LocalDate date, Enums.StartTimes start_time) {
+        this.start_date_time = start_time.getStartTime().atDate(date);
     }
 
     abstract LocalDateTime getEndTime();
 
     boolean is_allowed_time() {
-        return LocalDateTime.now().isAfter(start_time)
+        return LocalDateTime.now().isAfter(start_date_time)
                 && LocalDateTime.now().isBefore(getEndTime());
     }
+
+    public String get_additional_info() {
+        return "Start time: " + start_date_time.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+    }
+
 }
 
 class ShortPeriodPermission extends TimePermission implements CheckWeekday {
     boolean is_weekend;
-    Period period;
+    Enums.ShortPeriod period;
 
-    ShortPeriodPermission(LocalDateTime start_time, Period duration, boolean is_weekend) throws IllegalArgumentException {
-        super(start_time);
+    ShortPeriodPermission(LocalDate date, Enums.StartTimes start_time, Enums.ShortPeriod duration, boolean is_weekend) throws IllegalArgumentException {
+        super(date, start_time);
         setVariables(duration, is_weekend);
-        checkPeriod();
+        checkShortPeriod();
     }
 
-    ShortPeriodPermission(String string_time, Period duration, boolean is_weekend) throws IllegalArgumentException {
-        super(string_time);
-        setVariables(duration, is_weekend);
-        checkPeriod();
-    }
 
-    private void setVariables(Period duration, boolean is_weekend) {
+    private void setVariables(Enums.ShortPeriod duration, boolean is_weekend) {
         this.period = duration;
         this.is_weekend = is_weekend;
     }
 
-    private void checkPeriod() throws IllegalArgumentException {
-        if (((DayOfWeek.of(start_time.get(ChronoField.DAY_OF_WEEK)) != DayOfWeek.MONDAY)
-                || (period != Period.FIVE_DAYS))
-                && ((period == Period.FIVE_DAYS)
-                || (is_weekend(start_time) != is_weekend(getEndTime())))) {
-            throw new IllegalArgumentException("The period includes weekends and weekdays at the same time.");
+    private void checkShortPeriod() throws IllegalArgumentException {
+        if (((DayOfWeek.of(start_date_time.get(ChronoField.DAY_OF_WEEK)) != DayOfWeek.MONDAY)
+                || (period != Enums.ShortPeriod.FIVE_DAYS))
+                && ((period == Enums.ShortPeriod.FIVE_DAYS)
+                || (is_weekend(start_date_time) != is_weekend(getEndTime())))) {
+            throw new IllegalArgumentException("The Enums.ShortPeriod includes weekends and weekdays at the same time.");
         }
     }
 
     LocalDateTime getEndTime() {
-        return (LocalDateTime) period.getDuration().addTo(this.start_time);
+        return (LocalDateTime) period.getDuration().addTo(this.start_date_time);
     }
 
     @Override
@@ -104,19 +104,23 @@ class CountPermission extends Permissions implements CheckWeekday {
     }
 
     @Override
-    void usePermission() {
+    public void usePermission() {
         if (checkPermission()) {
             rest_of_trips--;
         }
     }
+
+    public String get_additional_info() {
+        return "Rest of trips: " + rest_of_trips;
+    }
 }
 
 class SeasonPermission extends TimePermission {
-    LocalDateTime end_of_season_time;
+    LocalDateTime end_of_season_time = LocalDateTime.parse("2025-03-30T20:00:00.00");
 
-    SeasonPermission(String string_time, LocalDateTime end_of_season_time) {
-        super(string_time);
-        this.end_of_season_time = end_of_season_time;
+    SeasonPermission(LocalDate date,
+                     Enums.StartTimes start_time) {
+        super(date, start_time);
     }
 
     LocalDateTime getEndTime() {
@@ -128,5 +132,3 @@ class SeasonPermission extends TimePermission {
         return is_allowed_time();
     }
 }
-
-

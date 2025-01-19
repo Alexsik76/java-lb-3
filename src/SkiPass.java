@@ -1,30 +1,61 @@
 public class SkiPass {
-    String id;
+    int id;
     boolean blocked = false;
     Permissions permission;
 
-    SkiPass(String id, Permissions permission) {
+    SkiPass(int id, Permissions permission) {
         this.id = id;
         this.permission = permission;
     }
 
-    public boolean checkSkyPass() throws NotPermitted {
+    public void checkSkyPass(boolean verbose) throws NotPermitted {
         if (blocked) {
-            throw new NotPermitted("sky pass blocked");
+            throw new NotPermitted(getInfo(verbose), "SkyPass blocked");
         }
         if (!permission.checkPermission()) {
-            throw new NotPermitted("");
+            throw new NotPermitted(getInfo(verbose), "");
         }
-        return true;
     }
 
-    public void useSkyPass() throws NotPermitted {
-        if (checkSkyPass()) {
-            permission.usePermission();
-            System.out.println("SkiPass " + id + " successfully used");
-        } else {
-            System.out.println("SkyPass " + id + " not permitted");
+    public String getInfo(boolean verbose) {
+        String spInfo = String.valueOf(this.id);
+        if (verbose) {
+            spInfo = this.toString();
         }
+        return spInfo;
+    }
+
+    public void useSkyPass(boolean verbose) {
+        try {
+            checkSkyPass(verbose);
+            System.out.println("SkiPass " + getInfo(verbose) + "\n" +
+                    Colors.GREEN + "successfully used" + Colors.RESET);
+            permission.usePermission();
+        } catch (NotPermitted e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    public void blockSkyPass() {
+        this.blocked = true;
+        System.out.println("SkiPass " + getInfo(true) + "\n" +
+                Colors.RED + "successfully blocked" + Colors.RESET);
+    }
+
+    public void unBlockSkyPass() {
+
+        this.blocked = false;
+        System.out.println("SkiPass " + getInfo(true) + "\n" +
+                Colors.GREEN + "successfully unblocked" + Colors.RESET);
+    }
+
+    @Override
+    public String toString() {
+
+        return "ID: " + this.id + "\n" +
+                "Permission class: " + this.permission.getClass().getSimpleName() + "\n" +
+                "Blocked: " + this.blocked + "\n" +
+                this.permission.get_additional_info() + "\n";
     }
 }
 

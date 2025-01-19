@@ -1,11 +1,11 @@
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ShortPeriodPermissionTest {
-    LocalDateTime start_time = LocalDateTime.now().minusHours(3);
     boolean is_weekend = CheckWeekday.check_weekend(LocalDateTime.now());
-    final ShortPeriodPermission sh_p_p = new ShortPeriodPermission(start_time, Period.HALF_DAY, is_weekend);
+    final ShortPeriodPermission sh_p_p = new ShortPeriodPermission(LocalDate.now(), Enums.StartTimes.AM, Enums.ShortPeriod.HALF_DAY, is_weekend);
 
     //    private final LocalDateTime test_time = LocalDateTime.parse("11:00 22.11.2024");
     ShortPeriodPermissionTest() throws IllegalArgumentException {

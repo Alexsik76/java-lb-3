@@ -1,28 +1,27 @@
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.\
-
+import java.util.ArrayList;
 
 public class MVCMain {
-    public static void main(String[] args) throws IllegalArgumentException, NotPermitted {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.print("Hello and welcome!\n");
+    public static boolean verbose = false;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+    public static void main(String[] args) throws IllegalArgumentException {
+        System.out.print("Hello and welcome!\n");
+        processArgs(args);
+        Generation gen = new Generation(51, verbose);
+        ArrayList<SkiPass> tickets = gen.getTickets();
+        SkiNet sky_net = new SkiNet(tickets);
+        Turnstile turnstile = new Turnstile(sky_net);
+        turnstile.useTurnstile();
+    }
+
+    private static void processArgs(String[] args) {
+        if (args.length > 0 && (args[0].equals("-V") || args[0].equals("--verbose"))) {
+            System.out.println("Увімкнено розширене інформування. \n" +
+                    "Щоб вимкнути - приберіть '-V' або '--verbose' з параметрів виклику програми");
+            verbose = true;
+        } else {
+            System.out.println("Щоб увімкнути розширене інформування - додайте '-V' або '--verbose' \n" +
+                    "до параметрів виклику програми");
         }
-        String st_t = "09:00 22.11.2024";
-        try {
-            Permissions perm_t = new ShortPeriodPermission(st_t, Period.HALF_DAY, false);
-            SkiPass sky_pass = new SkiPass("1", perm_t);
-            sky_pass.useSkyPass();
-        } catch (IllegalArgumentException | NotPermitted e) {
-            System.err.println(e.getMessage());
-        }
-        Permissions perm_c = new CountPermission(false, 5);
-        SkiPass sky_pass_2 = new SkiPass("2", perm_c);
-        sky_pass_2.useSkyPass();
+        System.out.println("-".repeat(20));
     }
 }
