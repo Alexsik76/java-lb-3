@@ -45,14 +45,14 @@ public class Turnstile {
             System.out.println("""
                     Введіть:
                     'c' - для вибору квитка;
-                    'p' - для використання квитка;
+                    'u' - для використання квитка;
                     або 'q' для виходу""");
             String value = userInput.nextLine();
             switch (value) {
                 case "c":
                     choiceTicketId();
                     break;
-                case "p":
+                case "u":
                     processTicket();
                     break;
                 case "q":
