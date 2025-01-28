@@ -1,5 +1,4 @@
 import java.time.DayOfWeek;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -62,14 +61,9 @@ class ShortPeriodPermission extends TimePermission implements CheckWeekday {
 
     ShortPeriodPermission(LocalDate date, Enums.StartTimes start_time, Enums.ShortPeriod duration, boolean is_weekend) throws IllegalArgumentException {
         super(date, start_time);
-        setVariables(duration, is_weekend);
-        checkShortPeriod();
-    }
-
-
-    private void setVariables(Enums.ShortPeriod duration, boolean is_weekend) {
         this.period = duration;
         this.is_weekend = is_weekend;
+        checkShortPeriod();
     }
 
     private void checkShortPeriod() throws IllegalArgumentException {

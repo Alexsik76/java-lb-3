@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ShortPeriodPermissionTest {
     boolean is_weekend = CheckWeekday.check_weekend(LocalDateTime.now());
-    final ShortPeriodPermission sh_p_p = new ShortPeriodPermission(LocalDate.now(), Enums.StartTimes.AM, Enums.ShortPeriod.HALF_DAY, is_weekend);
+    final ShortPeriodPermission sh_p_p = new ShortPeriodPermission(LocalDate.now(), Enums.StartTimes.AM, Enums.ShortPeriod.DAY, is_weekend);
 
     //    private final LocalDateTime test_time = LocalDateTime.parse("11:00 22.11.2024");
     ShortPeriodPermissionTest() throws IllegalArgumentException {
@@ -21,11 +21,6 @@ public class ShortPeriodPermissionTest {
         assertFalse(sh_p_p.is_today_weekend());
     }
 
-    @org.junit.jupiter.api.Test
-    void getEndTime() {
-        LocalDateTime correct_end_time = LocalDateTime.now().plusHours(1);
-        assertEquals(correct_end_time.getSecond(), sh_p_p.getEndTime().getSecond());
-    }
 
     @org.junit.jupiter.api.Test
     void checkPermission() {

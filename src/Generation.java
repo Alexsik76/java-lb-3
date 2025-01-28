@@ -66,11 +66,11 @@ public class Generation {
     }
 
     private Permissions getRandomShortPeriodPermission() {
-        return new ShortPeriodPermission(LocalDate.now(), getRandomStartTimes(), getRandomShortPeriod(), true);
+        return new ShortPeriodPermission(LocalDate.now(), getRandomStartTimes(), getRandomShortPeriod(), false);
     }
 
     private Permissions getRandomCountPermission() {
-        return new CountPermission(true, (int) (Math.random() * 10));
+        return new CountPermission(false, (int) (Math.random() * 10));
     }
 
     private Permissions getRandomSeasonsPermission() {

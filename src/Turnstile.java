@@ -65,6 +65,7 @@ public class Turnstile {
     }
     private void choiceTicketId(){
         boolean exit = false;
+        int old_id = currentId;
         Scanner userInput = new Scanner(System.in);
 
         while (!exit){
@@ -89,12 +90,15 @@ public class Turnstile {
                 }
             }
         }
+        if(currentId != old_id){
+            processTicket();
+        }
     }
 
     private void processTicket() {
         boolean exit = false;
         Scanner userInput = new Scanner(System.in);
-        showTicketInfo(currentId);
+//        showTicketInfo(currentId);
         while (!exit){
             System.out.println("""
                     Введіть:

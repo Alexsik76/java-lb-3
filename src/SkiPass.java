@@ -13,7 +13,7 @@ public class SkiPass {
             throw new NotPermitted(getInfo(verbose), "SkyPass blocked");
         }
         if (!permission.checkPermission()) {
-            throw new NotPermitted(getInfo(verbose), "");
+            throw new NotPermitted(getInfo(verbose), " SkyPass not checked");
         }
     }
 
